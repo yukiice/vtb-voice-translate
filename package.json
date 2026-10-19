@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "check:worklet": "node tools/check-worklet.mjs",
     "setup:hooks": "git config core.hooksPath .githooks",
-    "scan:secrets": ".githooks/pre-commit"
+    "scan:secrets": ".githooks/pre-commit",
+    "check:key": "node tools/m1-bench/probe.mjs ping"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.6",
