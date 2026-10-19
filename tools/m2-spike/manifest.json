@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "M2-0 · tabCapture 链路验证",
+  "version": "0.0.1",
+  "description": "验证 α 架构最后一个未验证假设：getMediaStreamId → offscreen getUserMedia 能否拿到 B 站标签页音频",
+
+  "permissions": [
+    "tabCapture",
+    "offscreen",
+    "activeTab"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "action": {
+    "default_title": "点击开始捕获当前标签页音频"
+  },
+
+  "minimum_chrome_version": "116"
+}

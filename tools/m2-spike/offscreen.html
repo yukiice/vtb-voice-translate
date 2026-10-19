@@ -1,0 +1,24 @@
+<!doctype html>
+<!--
+  Offscreen document —— 承载音频采集与处理。
+
+  为什么必须有它：MV3 的 service worker 会在 30 秒无事件后休眠，
+  而音频采集是长连接，SW 一睡就断。offscreen document 不受 SW 生命周期影响（PLAN §8.2）。
+
+  本文件本身很薄，逻辑全在 offscreen.js。
+-->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>M2-0 offscreen</title>
+  </head>
+  <body style="font: 13px/1.6 -apple-system, system-ui, sans-serif; padding: 16px; max-width: 720px">
+    <h3 style="margin: 0 0 8px">M2-0 · offscreen 采集器</h3>
+    <p id="state" style="color: #666; margin: 0 0 12px">等待 service worker 派发 streamId…</p>
+    <pre
+      id="log"
+      style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; padding: 10px; max-height: 420px; overflow: auto; font-size: 12px"
+    ></pre>
+    <script src="offscreen.js" type="module"></script>
+  </body>
+</html>
