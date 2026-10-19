@@ -25,8 +25,14 @@ note() { printf '%s\n' "$*" >&2; }
 BAD_FILE_RE='(^|/)\.env$|(^|/)\.env\.(local|development|production|test)$|\.pem$|\.key$|(^|/)id_(rsa|ed25519|ecdsa)$|(^|/)\.npmrc$|(^|/)secrets?\.json$'
 
 # ── 2. 凭证形状 ──
-# DashScope / OpenAI 风格：sk- 后面跟 ≥24 个 key 字符
-KEY_RE='sk-[A-Za-z0-9_-]{24,}'
+# DashScope / OpenAI 风格：sk- 后面跟 ≥24 个 key 字符。
+#
+# ⚠️ 字符集里**必须**包含 `.`：实测 2026-10 的百炼 workspace key 是
+#    115 字符、含点号（`sk-ws-XXXX.YYYY...`）的格式，不是早年文档里的
+#    `sk-` + 32 位十六进制。早先漏了 `.`，于是「新格式的真 Key」能直接过卡。
+#    代价是多一点误报面（`sk-` 后面跟一长串带点的文本），但两者前缀差异极大，
+#    而且误报只是多敲一次 `--no-verify`，漏报是换 key + 重写历史。不对称。
+KEY_RE='sk-[A-Za-z0-9_.-]{24,}'
 # 这些前缀是测试与文档里的占位符，放行
 ALLOW_RE='^sk-(test|fake|dummy|mock|example|xxx|REDACTED|\*+)'
 
