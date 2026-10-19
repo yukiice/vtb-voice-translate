@@ -1,0 +1,26 @@
+{
+  "name": "vtb-voice-translate",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "B 站直播 日语→简体中文 实时字幕（Chrome MV3 扩展，方案 α）。设计依据见 PLAN.md",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "postinstall": "wxt prepare",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.core.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:worklet": "node tools/check-worklet.mjs"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5",
+    "wxt": "^0.21.4"
+  },
+  "dependencies": {
+    "preact": "^11.0.1"
+  }
+}

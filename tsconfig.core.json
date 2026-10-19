@@ -1,0 +1,21 @@
+{
+  // 单独为 src/core 跑一次类型检查，把 PLAN §6.1/§6.3 的硬约束钉死：
+  // **core 层不得依赖任何 Chrome API 或 DOM**，必须是纯逻辑（这样 Vitest 能直接跑）。
+  //
+  // 为什么需要这个文件：主 tsconfig 从 WXT 继承了 DOM lib + chrome 全局类型，
+  // 那里的 core 是「能通过但没约束」的 —— 手滑写个 window/setTimeout 也不会报错。
+  // 这里剥掉 DOM 与 @types，误用就会在 typecheck 阶段失败。
+  //
+  // 用 `WebWorker` lib 而不是 `DOM`：它提供 core 真正需要的那几个全局
+  // （`setTimeout` / `crypto` / `TextEncoder`），但**没有 window / document**。
+  // 语义上也更贴切 —— core 逻辑实际跑在 offscreen（无 UI 的文档）与 worker 里。
+  //
+  // 将来若把 AudioWorklet 的处理器放进 core/audio/，它需要 worklet 全局声明
+  // （AudioWorkletProcessor 不在任何标准 lib 里），届时给它单独配置或在 include 里排除该子目录。
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "WebWorker"],
+    "types": []
+  },
+  "include": ["src/core"]
+}

@@ -1,0 +1,16 @@
+{
+  // 基础严格度与路径别名由 WXT 生成（postinstall → .wxt/tsconfig.json）：
+  // 它已开 strict + noUncheckedIndexedAccess + noImplicitOverride，
+  // 并提供 @/* → src/* 别名、chrome/browser 全局类型、以及 DOM lib。
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    // 不额外开 exactOptionalPropertyTypes：WXT 自身未开，
+    // 与它生成的类型集成时噪音大于收益（src 里到处是它的类型）。
+    "skipLibCheck": true,
+    // Preact 的 JSX（Q30 已定 Preact）。“react-jsx” 是 TS 的自动运行时模式，
+    // 配合 jsxImportSource 指向 preact，就不会真的拉到 React。
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "include": ["src", "tests", "wxt.config.ts", ".wxt/wxt.d.ts"]
+}

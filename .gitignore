@@ -1,0 +1,37 @@
+# ── 依赖 ──
+node_modules/
+.pnpm-store/
+
+# ── 构建产物 ──
+dist/
+.output/
+.wxt/
+*.zip
+
+# ── 密钥：绝不入库 ──
+.env
+.env.*
+!.env.example
+*.key
+secrets/
+
+# ── M1 测试素材：版权原因，永不提交 ──
+tools/m1-bench/audio/
+tools/m1-bench/out/
+*.wav
+*.aiff
+*.mp3
+*.flac
+*.m4a
+
+# ── 系统 / 编辑器 ──
+.DS_Store
+.vscode/
+.idea/
+
+# ── 日志 ──
+*.log
+
+# M1 探针的隔离 venv
+tools/m1-bench/.venv/
+tools/m1-bench/audio/
