@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 让「扩展程序选项」在新标签页打开（默认是扩展页里的小弹层，输入框太窄） -->
+    <meta name="manifest.open_in_tab" content="true" />
+    <title>VTB Voice Translate · 设置</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #18181b;
+        --muted: #71717a;
+        --line: #e4e4e7;
+        --accent: #2563eb;
+        --ok: #16a34a;
+        --bad: #dc2626;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #fafafa;
+          --muted: #a1a1aa;
+          --line: #3f3f46;
+        }
+      }
+      body {
+        margin: 0;
+        font: 14px/1.6 -apple-system, "Helvetica Neue", "PingFang SC", sans-serif;
+        color: var(--fg);
+        background: transparent;
+      }
+      .wrap {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 32px 24px 48px;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .small {
+        font-size: 12.5px;
+      }
+      .field {
+        display: block;
+        margin: 24px 0 12px;
+      }
+      .field span {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 9px 11px;
+        font: inherit;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--fg);
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+      }
+      input:focus {
+        outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+        border-color: var(--accent);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      button {
+        font: inherit;
+        padding: 8px 16px;
+        border-radius: 7px;
+        border: 1px solid transparent;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      button.ghost {
+        background: transparent;
+        color: var(--fg);
+        border-color: var(--line);
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .bad {
+        color: var(--bad);
+      }
+      hr {
+        border: 0;
+        border-top: 1px solid var(--line);
+        margin: 28px 0 16px;
+      }
+      ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      li + li {
+        margin-top: 6px;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12.5px;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--fg) 8%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
