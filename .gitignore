@@ -13,7 +13,17 @@ dist/
 .env.*
 !.env.example
 *.key
+*.pem
+*.p12
+*.pfx
 secrets/
+secret*.json
+.npmrc
+
+# ⚠️ `.env.*` 已经把 `.env.local` 盖住了，但这里再写一遍是**故意的**：
+#    M1 探针的真实 Key 就存在 `tools/m1-bench/.env.local`，
+#    而 `.gitignore` 的规则很容易在下一次编辑时被误删 —— 单独列一行，改错了也能一眼看到。
+tools/m1-bench/.env.local
 
 # ── M1 测试素材：版权原因，永不提交 ──
 tools/m1-bench/audio/
@@ -24,6 +34,9 @@ tools/m1-bench/out/
 *.flac
 *.m4a
 
+# ── M1 探针的隔离 venv（装了 yt-dlp，已不再使用）──
+tools/m1-bench/.venv/
+
 # ── 系统 / 编辑器 ──
 .DS_Store
 .vscode/
@@ -31,7 +44,3 @@ tools/m1-bench/out/
 
 # ── 日志 ──
 *.log
-
-# M1 探针的隔离 venv
-tools/m1-bench/.venv/
-tools/m1-bench/audio/

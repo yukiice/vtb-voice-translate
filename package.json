@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.core.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:worklet": "node tools/check-worklet.mjs"
+    "check:worklet": "node tools/check-worklet.mjs",
+    "setup:hooks": "git config core.hooksPath .githooks",
+    "scan:secrets": ".githooks/pre-commit"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.6",

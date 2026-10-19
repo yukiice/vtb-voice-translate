@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+#
+# 提交前阻断凭证泄露。
+#
+# ── 为什么需要它 ──
+# 一个 `git add -A` 就能把 `.env.local` 里的真实 API Key 永久写进历史。
+# 之后即使删掉文件，key 仍然在旧提交里 —— 只能靠 `filter-repo` 重写历史才能清掉，
+# 而如果已经 push 过，就得**换 key**。成本远高于「提交前多花 50ms 扫一遍」。
+#
+# 装法：`npm run setup:hooks`（= `git config core.hooksPath .githooks`）
+#
+# 设计取舍：
+#   · 只扫**暂存区**（`git diff --cached`），扫全工作区会把 ignore 掉的文件也算进来，误报太多
+#   · 认得出测试/文档占位符（`sk-test`、`sk-xxx`…），否则每次改测试都被拦，人就会去关掉它
+#   · 报错时**只说位置，不回显内容** —— 免得 CI 日志 / 终端滚动又泄露一遍
+set -uo pipefail
+
+RED=$'\033[31m'; YEL=$'\033[33m'; DIM=$'\033[2m'; RST=$'\033[0m'
+fail=0
+
+note() { printf '%s\n' "$*" >&2; }
+
+# ── 1. 不该被跟踪的文件名 ──
+# `.env.example` 是模板（只有变量名），必须放行
+BAD_FILE_RE='(^|/)\.env$|(^|/)\.env\.(local|development|production|test)$|\.pem$|\.key$|(^|/)id_(rsa|ed25519|ecdsa)$|(^|/)\.npmrc$|(^|/)secrets?\.json$'
+
+# ── 2. 凭证形状 ──
+# DashScope / OpenAI 风格：sk- 后面跟 ≥24 个 key 字符
+KEY_RE='sk-[A-Za-z0-9_-]{24,}'
+# 这些前缀是测试与文档里的占位符，放行
+ALLOW_RE='^sk-(test|fake|dummy|mock|example|xxx|REDACTED|\*+)'
+
+# 其他平台的凭证
+OTHER_RE='(SESSDATA|bili_jct|buvid3|access_token|refresh_token|client_secret)[[:space:]]*[=:][[:space:]]*["'\'']?[A-Za-z0-9%._-]{16,}'
+
+# ⚠️ macOS 自带的是 bash 3.2，**没有 `mapfile`**（那是 bash 4+ 的）。
+#    早先的版本在这里直接就挂了，而且因为 `set -u` 会以非 0 退出，
+#    看起来像「成功拦截」，实际是根本没跑扫描 —— 最危险的那种假阳性。
+#    所以这里用 heredoc 逐行读（heredoc 不建子 shell，`fail` 能正常回传）。
+while IFS= read -r f; do
+  [ -n "$f" ] || continue
+  # 文件名命中
+  if printf '%s' "$f" | grep -qE "$BAD_FILE_RE"; then
+    note "${RED}❌ 拒绝提交凭证文件${RST}  $f"
+    note "${DIM}   如果是模板，请命名为 .env.example${RST}"
+    fail=1
+    continue
+  fi
+
+  # 读暂存区内容（不是工作区 —— 两者可能不一致）
+  content=$(git show ":$f" 2>/dev/null) || continue
+
+  # 真实 Key
+  hits=$(printf '%s\n' "$content" | grep -oE "$KEY_RE" | grep -vE "$ALLOW_RE" | sort -u || true)
+  if [ -n "$hits" ]; then
+    n=$(printf '%s\n' "$hits" | wc -l | tr -d ' ')
+    note "${RED}❌ $f 里发现 $n 个疑似真实 API Key${RST}"
+    note "${DIM}   （内容已隐藏，不在此回显）${RST}"
+    fail=1
+  fi
+
+  # 其他凭证
+  hits2=$(printf '%s\n' "$content" | grep -oE "$OTHER_RE" | grep -vE '=[[:space:]]*\.\.\.|=[[:space:]]*xxx|=\*+' || true)
+  if [ -n "$hits2" ]; then
+    n=$(printf '%s\n' "$hits2" | wc -l | tr -d ' ')
+    note "${RED}❌ $f 里发现 $n 处疑似凭证赋值${RST}"
+    fail=1
+  fi
+done <<EOF
+$(git diff --cached --name-only --diff-filter=ACM)
+EOF
+
+if [ "$fail" -ne 0 ]; then
+  note ""
+  note "${YEL}提交已阻止。${RST}"
+  note "${DIM}确实是误报的话：git commit --no-verify${RST}"
+  note "${DIM}真泄露过的话：先换 Key，再清理历史。只删文件是不够的。${RST}"
+  exit 1
+fi
+
+exit 0
